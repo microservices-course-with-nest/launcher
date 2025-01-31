@@ -1,0 +1,53 @@
+version: '3'
+
+services:
+  nats-server:
+    image: nats:latest
+    ports:
+      - "8222:8222"
+
+  client-gateway:
+    build: ./client-gateway
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./client-gateway/src:/usr/src/app/src
+    command: npm run start:dev
+    env_file:
+      - ./client-gateway/.env
+
+  products-ms:
+    build: ./products-microservice
+    ports:
+      - "3001:3000"
+    volumes:
+      - ./products-microservice/src:/usr/src/app/src
+    command: npm run start:dev
+    env_file:
+      - ./products-microservice/.env
+
+  orders-ms:
+    build: ./orders-microservice
+    ports:
+      - "3002:3000"
+    volumes:
+      - ./orders-microservice/src:/usr/src/app/src
+    command: npm run start:dev
+    environment:
+      - PORT=3000
+      - NATS_SERVERS=nats://nats-server:4222
+      - DATABASE_URL=postgresql://postgres:123456@orders-db:5432/ordersdb?schema=public
+    depends_on:
+      - orders-db
+
+  orders-db:
+    image: postgres:16.2
+    restart: always
+    volumes:
+      - ./orders-microservice/postgres:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=123456
+      - POSTGRES_DB=ordersdb
