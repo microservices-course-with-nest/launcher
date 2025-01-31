@@ -1,0 +1,3 @@
+[submodule "client-gateway"]
+	path = client-gateway
+	url = git@github.com:microservices-course-with-nest/client-gateway.git
