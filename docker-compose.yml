@@ -13,25 +13,26 @@ services:
     volumes:
       - ./client-gateway/src:/usr/src/app/src
     command: npm run start:dev
-    env_file:
-      - ./client-gateway/.env
+    environment:
+      - PORT=3000
+      - NATS_SERVERS=nats://nats-server:4222
 
   products-ms:
-    build: ./products-microservice
+    build: ./products-ms
     ports:
       - "3001:3000"
     volumes:
-      - ./products-microservice/src:/usr/src/app/src
+      - ./products-ms/src:/usr/src/app/src
     command: npm run start:dev
     env_file:
-      - ./products-microservice/.env
+      - ./products-ms/.env
 
   orders-ms:
-    build: ./orders-microservice
+    build: ./orders-ms
     ports:
       - "3002:3000"
     volumes:
-      - ./orders-microservice/src:/usr/src/app/src
+      - ./orders-ms/src:/usr/src/app/src
     command: npm run start:dev
     environment:
       - PORT=3000
@@ -44,7 +45,7 @@ services:
     image: postgres:16.2
     restart: always
     volumes:
-      - ./orders-microservice/postgres:/var/lib/postgresql/data
+      - ./orders-ms/postgres:/var/lib/postgresql/data
     ports:
       - 5432:5432
     environment:
