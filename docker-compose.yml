@@ -34,10 +34,12 @@ services:
     volumes:
       - ./orders-ms/src:/usr/src/app/src
     command: npm run start:dev
-    environment:
-      - PORT=3000
-      - NATS_SERVERS=nats://nats-server:4222
-      - DATABASE_URL=postgresql://postgres:123456@orders-db:5432/ordersdb?schema=public
+    # environment:
+    #   - PORT=3000
+    #   - NATS_SERVERS=nats://nats-server:4222
+    #   - DATABASE_URL=postgresql://postgres:123456@orders-db:5432/ordersdb?schema=public
+    env_file:
+      - ./orders-ms/.env
     depends_on:
       - orders-db
 
